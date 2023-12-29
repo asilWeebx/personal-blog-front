@@ -554,9 +554,25 @@ body.nav-active { overflow: hidden; }
   align-items: center;
   gap: 20px;
   transition: transform var(--transition-2);
+  width: 380px;
+
+
 }
 
-.slider-item { min-width: 100%; }
+.slider-item {
+
+  min-width: 100%;
+    }
+.slider-item{
+  transition: 1s;
+    left: 0;
+  /* Slaydlar yonilg'isini o'zgartiring */}
+
+.slider-item.active {
+      opacity: 1;
+        transform: translateX(0); /* Slaydlar yonilg'isini o'zgartiring */
+
+    }
 
 .slider-card { position: relative; }
 
@@ -1080,7 +1096,7 @@ body.nav-active { overflow: hidden; }
 
   .slider { --slider-items: 3; }
 
-  .slider-item { min-width: calc(33.33% - 13.33px); }
+  .slider-item { min-width: calc(100% - 13.33px); }
 
 
 

@@ -164,19 +164,19 @@
                     <div class="card-content">
 
                         <h2 class="headline headline-2 section-title card-title" id="topic-label">
-                            Issiq mavzular
+                           Projects
                         </h2>
 
                         <p class="card-text">
-                            IT bo'yicha maslahatlar, Python dagi yangiliklar, bo'yicha so'nggi yangiliklarni o'tkazib yubormang...
+                            Bu yerda men qilgan va qatnashgan projectlarim bor...
                         </p>
 
                         <div class="btn-group">
-                            <button class="btn-icon" aria-label="previous" data-slider-prev>
+                            <button id="prevBtn" class="btn-icon" aria-label="previous" data-slider-prev>
                                 <ion-icon name="arrow-back" aria-hidden="true"></ion-icon>
                             </button>
 
-                            <button class="btn-icon" aria-label="next" data-slider-next>
+                            <button id="nextBtn" class="btn-icon" aria-label="next" data-slider-next>
                                 <ion-icon name="arrow-forward" aria-hidden="true"></ion-icon>
                             </button>
                         </div>
@@ -184,98 +184,7 @@
                     </div>
 
                     <div class="slider" data-slider>
-                        <ul class="slider-list" data-slider-container>
-
-                            <li class="slider-item">
-                                <a href="#" class="slider-card">
-
-                                    <figure class="slider-banner img-holder" style="--width: 507; --height: 618;">
-                                        <img src="./assets/images/topic-1.png" width="507" height="618" loading="lazy"
-                                             alt="Sport"
-                                             class="img-cover">
-                                    </figure>
-
-                                    <div class="slider-content">
-                                        <span class="slider-title">Sport</span>
-
-
-                                    </div>
-
-                                </a>
-                            </li>
-
-                            <li class="slider-item">
-                                <a href="#" class="slider-card">
-
-                                    <figure class="slider-banner img-holder" style="--width: 507; --height: 618;">
-                                        <img src="./assets/images/topic-2.png" width="507" height="618" loading="lazy"
-                                             alt="Travel"
-                                             class="img-cover">
-                                    </figure>
-
-                                    <div class="slider-content">
-                                        <span class="slider-title">Travel</span>
-
-
-                                    </div>
-
-                                </a>
-                            </li>
-
-                            <li class="slider-item">
-                                <a href="#" class="slider-card">
-
-                                    <figure class="slider-banner img-holder" style="--width: 507; --height: 618;">
-                                        <img src="./assets/images/topic-3.png" width="507" height="618" loading="lazy"
-                                             alt="Design"
-                                             class="img-cover">
-                                    </figure>
-
-                                    <div class="slider-content">
-                                        <span class="slider-title">Design</span>
-
-                                    </div>
-
-                                </a>
-                            </li>
-
-                            <li class="slider-item">
-                                <a href="#" class="slider-card">
-
-                                    <figure class="slider-banner img-holder" style="--width: 507; --height: 618;">
-                                        <img src="./assets/images/topic-4.png" width="507" height="618" loading="lazy"
-                                             alt="Movie"
-                                             class="img-cover">
-                                    </figure>
-
-                                    <div class="slider-content">
-                                        <span class="slider-title">Movie</span>
-
-
-                                    </div>
-
-                                </a>
-                            </li>
-
-                            <li class="slider-item">
-                                <a href="#" class="slider-card">
-
-                                    <figure class="slider-banner img-holder" style="--width: 507; --height: 618;">
-                                        <img src="./assets/images/topic-5.png" width="507" height="618" loading="lazy"
-                                             alt="Lifestyle"
-                                             class="img-cover">
-                                    </figure>
-
-                                    <div class="slider-content">
-                                        <span class="slider-title">Lifestyle</span>
-
-
-                                    </div>
-
-                                </a>
-                            </li>
-
-                        </ul>
+                        <ul id="WebSite" class="slider-list" data-slider-container></ul>
                     </div>
 
                 </div>
@@ -585,7 +494,7 @@
                 // Recent postsni chiqaring
                 tagshash.innerHTML = '';
                 data.results.forEach(post => {
-                    const listItem = document.createElement('ul');
+                    const listItem = document.createElement('span');
                     listItem.innerHTML = `<li>
                         <button class="card tag-btn">
                             <img style="border-radius: 15px" src="${post.tag_image}" width="48" height="48" loading="lazy" alt="Culture">
@@ -598,6 +507,98 @@
             })
             .catch(error => console.error('Error:', error));
     });
+document.addEventListener("DOMContentLoaded", function () {
+    const apiUrl = 'https://personalblogas.pythonanywhere.com/api/web/';
+    const webContainer = document.getElementById('WebSite');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    let currentIndex = 0;
+    let data;
+
+    function showSlide(index) {
+        const slides = document.querySelectorAll('.slider-item');
+        slides.forEach((slide, i) => {
+            slide.classList.remove('active');
+            if (i === index) {
+                slide.classList.add('active');
+            }
+        });
+    }
+
+    function moveSliderItem() {
+        const item = document.querySelector('.slider-item.active');
+        const itemLeft = item.offsetLeft;
+        const containerLeft = webContainer.offsetLeft;
+        const newLeft = containerLeft - itemLeft;
+        webContainer.style.transform = `translateX(${newLeft}px)`;
+    }
+
+    function slidePrev() {
+        if (data) {
+            currentIndex = (currentIndex - 1 + data.results.length) % data.results.length;
+            showSlide(currentIndex);
+            moveSliderItem();
+        }
+    }
+
+    function fetchDataAndShowSlides() {
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                data = responseData;
+                webContainer.innerHTML = '';
+                data.results.forEach((webSite, index) => {
+                    const webItem = document.createElement('div');
+                    webItem.classList.add('slider-item');
+                    if (index === currentIndex) {
+                        webItem.classList.add('active');
+                    }
+                    webItem.innerHTML = `
+                        <a href="${webSite.url}" class="slider-card">
+                            <figure class="slider-banner img-holder" style="--width: 507; --height: 618;">
+                                <img src="${webSite.image_url}" width="507" height="618" loading="lazy"
+                                    alt="${webSite.name}"
+                                    class="img-cover">
+                            </figure>
+                            <div class="slider-content">
+                                <span class="slider-title">${webSite.name}</span>
+                            </div>
+                        </a>
+                    `;
+                    webContainer.appendChild(webItem);
+                });
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
+
+    function automaticSlideChange() {
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % data.results.length;
+            showSlide(currentIndex);
+            moveSliderItem();
+        }, 5000);
+    }
+
+    fetchDataAndShowSlides();
+    automaticSlideChange();
+
+    nextBtn.addEventListener("click", () => {
+        if (data) {
+            currentIndex = (currentIndex + 1) % data.results.length;
+            showSlide(currentIndex);
+            moveSliderItem();
+        }
+    });
+
+    prevBtn.addEventListener("click", slidePrev);
+});
+
+
 
      async function subscribe() {
             const emailInput = document.getElementById('emailAddress');
